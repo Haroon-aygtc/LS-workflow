@@ -1,0 +1,499 @@
+<html><head><base href="https://s54v_3furznxv6eoc6pt.content.websim.ai/">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Developer Team</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .dark-mode .card {
+            background: #2c3e50;
+            border: none;
+        }
+
+        .dark-mode .navbar {
+            background: linear-gradient(to right, #1a1a1a, #2c3e50) !important;
+        }
+
+        .navbar {
+            background: #4086D0 !important;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+
+        .team-member {
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        .member-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .member-avatar i {
+            font-size: 4rem;
+            color: #4086D0;
+        }
+
+        .role-badge {
+            background: #e74c3c;
+            color: white;
+            border-radius: 15px;
+            padding: 0.3rem 0.8rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .social-links {
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            color: #4086D0;
+            margin: 0 0.5rem;
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+
+        .dark-mode-toggle {
+            position: relative;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+        }
+
+        .dark-mode .modal-content {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .task-card {
+            border-left: 4px solid;
+            margin-bottom: 1rem;
+            padding: 1.2rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .task-details {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .dark-mode .task-details {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .task-card .badge {
+            padding: 0.5em 1em;
+        }
+
+        .task-pending {
+            border-left-color: #ffc107;
+        }
+
+        .task-in-progress {
+            border-left-color: #17a2b8;
+        }
+
+        .task-completed {
+            border-left-color: #28a745;
+        }
+
+        .progress {
+            height: 8px;
+            margin-top: 8px;
+        }
+
+        .task-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 0.5rem;
+        }
+
+        .stat-pending {
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .stat-progress {
+            background: rgba(23, 162, 184, 0.1);
+        }
+
+        .stat-completed {
+            background: rgba(40, 167, 69, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-people me-2 text-white"></i>
+            <span class="navbar-brand mb-0">Developer Team</span>
+        </div>
+        <div class="navbar-tools">
+            <div class="dark-mode-toggle">
+                <i class="bi bi-sun" id="darkModeToggle"></i>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="margin-top: 100px;">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card team-member">
+                <div class="card-body text-center">
+                    <div class="member-avatar mb-3">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <h5 class="card-title">Umer Farooq Ahmad</h5>
+                    <div class="role-badge">Team Lead</div>
+                    <p class="card-text">Experienced team lead with expertise in web development and team management.</p>
+                    <div class="social-links">
+                        <a href="https://github.com"><i class="bi bi-github"></i></a>
+                        <a href="https://linkedin.com"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://twitter.com"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card team-member">
+                <div class="card-body text-center">
+                    <div class="member-avatar mb-3">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <h5 class="card-title">Saleem Khan</h5>
+                    <div class="role-badge">Senior Developer</div>
+                    <p class="card-text">Senior developer specializing in backend systems and cloud architecture.</p>
+                    <div class="social-links">
+                        <a href="https://github.com"><i class="bi bi-github"></i></a>
+                        <a href="https://linkedin.com"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://twitter.com"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card team-member">
+                <div class="card-body text-center">
+                    <div class="member-avatar mb-3">
+                        <img src="/mr-saif.jpg" alt="Saif Ur Rehman profile photo" width="120" height="120" style="object-fit: cover; width: 100%; height: 100%;">
+                    </div>
+                    <h5 class="card-title">Saif Ur Rehman</h5>
+                    <div class="role-badge">Senior Developer</div>
+                    <p class="card-text">Senior developer with focus on frontend architecture and performance.</p>
+                    <div class="social-links">
+                        <a href="https://github.com"><i class="bi bi-github"></i></a>
+                        <a href="https://linkedin.com"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://twitter.com"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card team-member">
+                <div class="card-body text-center">
+                    <div class="member-avatar mb-3">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <h5 class="card-title">Haroon Badshah</h5>
+                    <div class="role-badge">Junior Developer</div>
+                    <p class="card-text">Frontend developer focused on creating responsive web applications.</p>
+                    <div class="social-links">
+                        <a href="https://github.com"><i class="bi bi-github"></i></a>
+                        <a href="https://linkedin.com"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://twitter.com"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card team-member">
+                <div class="card-body text-center">
+                    <div class="member-avatar mb-3">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <h5 class="card-title">Najeer</h5>
+                    <div class="role-badge">Junior Developer</div>
+                    <p class="card-text">Backend developer specializing in PHP and database management.</p>
+                    <div class="social-links">
+                        <a href="https://github.com"><i class="bi bi-github"></i></a>
+                        <a href="https://linkedin.com"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://twitter.com"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card team-member">
+                <div class="card-body text-center">
+                    <div class="member-avatar mb-3">
+                        <img src="/WhatsApp Image 2024-10-30 at 14.25.33 (1).jpeg" alt="Navneeth profile photo" width="120" height="120" style="object-fit: cover; width: 100%; height: 100%;">
+                    </div>
+                    <h5 class="card-title">Navneeth</h5>
+                    <div class="role-badge">Mobile App Developer</div>
+                    <p class="card-text">Mobile app specialist with cross-platform development expertise.</p>
+                    <div class="social-links">
+                        <a href="https://github.com"><i class="bi bi-github"></i></a>
+                        <a href="https://linkedin.com"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://twitter.com"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Developer Tasks</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="task-stats">
+                    <div class="stat-card stat-pending">
+                        <h3 class="pending-count">0</h3>
+                        <p>Pending</p>
+                    </div>
+                    <div class="stat-card stat-progress">
+                        <h3 class="progress-count">0</h3>
+                        <p>In Progress</p>
+                    </div>
+                    <div class="stat-card stat-completed">
+                        <h3 class="completed-count">0</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+
+                <div class="task-container">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            darkModeToggle.classList.remove('bi-sun');
+            darkModeToggle.classList.add('bi-moon');
+        } else {
+            darkModeToggle.classList.remove('bi-moon');
+            darkModeToggle.classList.add('bi-sun');
+        }
+    });
+
+    const teamMembers = document.querySelectorAll('.team-member');
+    const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+
+    const taskData = {
+        'Umer Farooq Ahmad': {
+            tasks: [
+                {
+                    title: 'Team Planning & Architecture',
+                    status: 'in-progress',
+                    progress: 70,
+                    assignedDate: '2023-11-20',
+                    completedDate: null,
+                    deadline: '2023-12-15',
+                    assignedBy: 'Project Director',
+                    description: 'Define technical architecture and team workflow'
+                }
+            ]
+        },
+        'Saleem Khan': {
+            tasks: [
+                {
+                    title: 'Backend Infrastructure Setup',
+                    status: 'completed',
+                    progress: 100,
+                    assignedDate: '2023-11-15',
+                    completedDate: '2023-11-30',
+                    deadline: '2023-12-01',
+                    assignedBy: 'Team Lead',
+                    description: 'Setup and configure backend infrastructure'
+                }
+            ]
+        },
+        'Saif Ur Rehman': {
+            tasks: [
+                {
+                    title: 'Frontend Performance Optimization',
+                    status: 'pending',
+                    progress: 0,
+                    assignedDate: '2023-12-01',
+                    completedDate: null,
+                    deadline: '2023-12-10',
+                    assignedBy: 'Project Manager',
+                    description: 'Optimize frontend performance across applications'
+                }
+            ]
+        },
+        'Haroon Badshah': {
+            tasks: [
+                {
+                    title: 'Responsive Website Design',
+                    status: 'pending',
+                    progress: 0,
+                    assignedDate: '2023-12-01',
+                    completedDate: null,
+                    deadline: '2023-12-20',
+                    assignedBy: 'Team Lead',
+                    description: 'Design responsive layouts for new features'
+                }
+            ]
+        },
+        'Najeer': {
+            tasks: [
+                {
+                    title: 'Database Schema Design',
+                    status: 'pending',
+                    progress: 0,
+                    assignedDate: '2023-12-01',
+                    completedDate: null,
+                    deadline: '2023-12-15',
+                    assignedBy: 'Tech Lead',
+                    description: 'Design the database schema for new project'
+                }
+            ]
+        },
+        'Navneeth': {
+            tasks: [
+                {
+                    title: 'Mobile App UI Design',
+                    status: 'pending',
+                    progress: 0,
+                    assignedDate: '2023-12-01',
+                    completedDate: null,
+                    deadline: '2023-12-25',
+                    assignedBy: 'Product Owner',
+                    description: 'Create user interface design for mobile applications'
+                }
+            ]
+        }
+    };
+
+    teamMembers.forEach(member => {
+        member.addEventListener('click', () => {
+            const name = member.querySelector('.card-title').textContent;
+            const tasks = taskData[name].tasks;
+            const taskContainer = document.querySelector('.task-container');
+
+            taskContainer.innerHTML = '';
+
+            let pending = 0, inProgress = 0, completed = 0;
+
+            tasks.forEach(task => {
+                const statusClass = task.status === 'pending' ? 'task-pending' :
+                    task.status === 'in-progress' ? 'task-in-progress' :
+                        'task-completed';
+
+                if (task.status === 'pending') pending++;
+                if (task.status === 'in-progress') inProgress++;
+                if (task.status === 'completed') completed++;
+
+                const taskElement = `
+                    <div class="task-card ${statusClass}">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">${task.title}</h6>
+                            <span class="badge bg-secondary">${task.status}</span>
+                        </div>
+                        <p class="small text-muted mb-2">${task.description}</p>
+                        <div class="task-details small">
+                            <div><strong>Assigned By:</strong> ${task.assignedBy}</div>
+                            <div><strong>Assigned Date:</strong> ${task.assignedDate}</div>
+                            ${task.completedDate ? `<div><strong>Completed:</strong> ${task.completedDate}</div>` : ''}
+                            <div><strong>Deadline:</strong> ${task.deadline}</div>
+                        </div>
+                        <div class="progress mt-2">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width: ${task.progress}%"
+                                 aria-valuenow="${task.progress}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                ${task.progress}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+                taskContainer.innerHTML += taskElement;
+            });
+
+            document.querySelector('.pending-count').textContent = pending;
+            document.querySelector('.progress-count').textContent = inProgress;
+            document.querySelector('.completed-count').textContent = completed;
+
+            taskModal.show();
+        });
+    });
+</script>
+</body></html>

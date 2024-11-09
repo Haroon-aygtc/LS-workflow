@@ -1,0 +1,1657 @@
+<html><head><base href="/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A90E2;      /* Modern blue */
+            --secondary: #45B7AF;    /* Teal */
+            --warning: #F5BE4F;      /* Warm yellow */
+            --danger: #E15554;       /* Coral red */
+            --success: #2ECC71;      /* Fresh green */
+            --info: #9B59B6;         /* Purple */
+            --light-gray: #F8F9FA;
+            --border-color: #E9ECEF;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.98);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.01);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes smoothFade {
+            0% {
+                opacity: 0.7;
+                transform: translateX(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideRight {
+            0% {
+                transform: translateX(-30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .app-header {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
+            text-align: left;
+        }
+
+        .app-subtitle {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin: 0;
+            text-align: left;
+        }
+
+        .app-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .workflow-step {
+            animation: none;
+            background: linear-gradient(145deg, white, var(--light-gray));
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin: 0 0 1.5rem 0;
+            border-radius: 6px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            min-height: auto;
+            height: auto;
+        }
+
+        .workflow-step.active {
+            animation: smoothFade 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #workflowDiagram {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            padding-right: 1rem;
+        }
+
+        #workflowDiagram .workflow-step {
+            margin: 0;
+            height: 100%;
+            min-height: 150px;
+            display: flex;
+            align-items: flex-start;
+            padding: 1.5rem;
+        }
+
+        #workflowDiagram .workflow-step.active {
+            background: linear-gradient(to right, rgba(74, 144, 226, 0.1), white);
+            border-left: 4px solid var(--primary);
+        }
+
+        #workflowDiagram .workflow-step:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
+
+        .role-card {
+            background: linear-gradient(145deg, white, var(--light-gray));
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .role-card.active {
+            background: linear-gradient(145deg, var(--primary), #357ABD);
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+
+        .role-card:hover::before {
+            background: var(--primary);
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+
+        .step-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .step-icon.bg-primary {
+            background: linear-gradient(45deg, #4A90E2, #357ABD);
+        }
+
+        .step-icon.bg-success {
+            background: linear-gradient(45deg, #2ECC71, #27AE60);
+        }
+
+        .step-icon.bg-warning {
+            background: linear-gradient(45deg, #F5BE4F, #F39C12);
+        }
+
+        .step-icon.bg-danger {
+            background: linear-gradient(45deg, #E15554, #C0392B);
+        }
+
+        .step-icon.bg-info {
+            background: linear-gradient(45deg, #9B59B6, #8E44AD);
+        }
+
+        .step-icon i {
+            transition: transform 0.3s ease;
+            color: white; /* Ensure icons are white for contrast */
+        }
+
+        .step-icon:hover i {
+            transform: scale(1.2) rotate(360deg);
+        }
+
+        /* Add a subtle glow effect for active icons */
+        .workflow-step.active .step-icon {
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .progress {
+            height: 12px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.05));
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            position: relative;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.3) 50%,
+            rgba(255,255,255,0) 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        #nextButton {
+            position: relative;
+            overflow: hidden;
+            padding: 12px 32px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 0; /* Removed border radius */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+            width: 100%; /* Make button full width of the left card */
+            margin-top: -1.5rem; /* Negative margin to move it up against the card */
+        }
+
+        #nextButton:active {
+            transform: translateY(2px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        #nextButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        #stepCard {
+            position: sticky;
+            top: 2rem;
+            width: 100%;
+            margin-bottom: 0; /* Remove bottom margin from step card */
+            padding-bottom: 4rem; /* Add padding to make room for the button */
+        }
+        .container-fluid {
+            padding-top: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .row {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-weight: 600;
+        }
+
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .text-muted {
+            color: #6C757D !important;
+        }
+
+        .list-unstyled li {
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: #fbfbfb;
+            transition: all 0.2s ease;
+            animation: slideRight 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .list-unstyled li:nth-child(1) { animation-delay: 0.1s; }
+        .list-unstyled li:nth-child(2) { animation-delay: 0.2s; }
+        .list-unstyled li:nth-child(3) { animation-delay: 0.3s; }
+        .list-unstyled li:nth-child(4) { animation-delay: 0.4s; }
+        .list-unstyled li:nth-child(5) { animation-delay: 0.5s; }
+        .list-unstyled li:nth-child(6) { animation-delay: 0.6s; }
+        .list-unstyled li:nth-child(7) { animation-delay: 0.7s; }
+        .list-unstyled li:nth-child(8) { animation-delay: 0.8s; }
+
+        .workflow-steps {
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .workflow-steps::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+
+        .step-icon i {
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .status-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-btn i {
+            font-size: 14px;
+        }
+
+        .status-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .status-btn.status-done {
+            background: linear-gradient(45deg, #2ECC71, #27AE60);
+            border: none;
+            color: white;
+        }
+
+        .status-btn.status-pending {
+            background: linear-gradient(45deg, #F5BE4F, #F39C12);
+            border: none;
+            color: white;
+        }
+
+        .status-btn.status-failed {
+            background: linear-gradient(45deg, #E15554, #C0392B);
+            border: none;
+            color: white;
+        }
+
+        #workflowDiagram .workflow-step .step-icon {
+            flex-shrink: 0;
+        }
+
+        #workflowDiagram .workflow-step .ms-3 {
+            flex: 1;
+            min-width: 0;
+        }
+
+        #workflowDiagram .workflow-step h5 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        #workflowDiagram .workflow-step p {
+            font-size: 0.85rem;
+            line-height: 1.2;
+            margin-bottom: 0;
+        }
+
+        #workflowDiagram .workflow-step .badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            #workflowDiagram {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #stepCard {
+            position: sticky;
+            top: 2rem;
+            width: 100%;
+        }
+
+        #workflowDiagram::-webkit-scrollbar {
+            display: none;
+        }
+
+        .workflow-step {
+            scroll-margin-top: 2rem;
+        }
+
+        .workflow-step.active {
+            animation: none;
+        }
+
+        #stepCard.workflow-step.active {
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        /* Remove bounce animation from modal and role cards */
+        .modal .workflow-step.active,
+        .role-card.workflow-step.active {
+            animation: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <a href="index.html" class="text-white me-3" title="Back to Home">
+                    <i class="bi bi-arrow-left-circle-fill" style="font-size: 1.4rem;"></i>
+                </a>
+                <h1 class="app-title">
+                    <i class="fas fa-project-diagram me-2"></i>
+                    Labor Supply System
+                </h1>
+                <p class="app-subtitle">Workflow Management Dashboard</p>
+            </div>
+            <div class="col-auto">
+                <div class="app-controls">
+
+                    <a href="javascript:void(0);" class="btn btn-secondary btn-sm me-2" onclick="handleBackClick()">
+                        <i class="fas fa-arrow-left me-1"></i> Back
+                    </a>
+
+<!--                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#teamManagementModal">-->
+<!--                        <i class="fas fa-users me-1"></i> Team-->
+<!--                    </button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid bg-light">
+    <div class="container py-4">
+
+        <!-- Role Selection -->
+        <div class="row mb-4" id="roleContainer">
+            <!-- Roles will be inserted here via JavaScript -->
+        </div>
+
+        <!-- Progress -->
+        <div class="mb-4" id="progressContainer">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="m-0">Progress</h5>
+                <span class="text-muted" id="progressText"></span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Current Step Card -->
+            <div class="col-lg-6 mb-4">
+                <div id="stepCard" class="workflow-step bg-white">
+                    <!-- Step content will be inserted here -->
+                </div>
+                <div class="mt-0">
+                    <button id="nextButton" class="btn btn-primary btn-lg">
+                        Next Step <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Workflow Diagram -->
+            <div class="col-lg-6">
+                <div id="workflowDiagram" class="workflow-steps">
+                    <!-- Workflow diagram will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Team Management Modal -->
+<div class="modal fade" id="teamManagementModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Team & Task Management</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6>Assign Workflow Task</h6>
+                        <form id="assignTaskForm">
+                            <div class="mb-3">
+                                <label class="form-label">Select Role</label>
+                                <select class="form-select" id="workflowRole" required>
+                                    <option value="">Select Role</option>
+                                    <!-- Dynamically populated -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Select Workflow Step</label>
+                                <select class="form-select" id="workflowStep" required disabled>
+                                    <option value="">Select Step</option>
+                                    <!-- Dynamically populated -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Select Team Member</label>
+                                <select class="form-select" id="taskMember" required disabled>
+                                    <option value="">Select Member</option>
+                                    <!-- Dynamically populated -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="taskStartDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Deadline Date</label>
+                                <input type="date" class="form-control" id="taskDeadlineDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Task Details</label>
+                                <textarea class="form-control" id="taskDescription" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success" disabled id="assignTaskButton">Assign Task</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h6>Current Tasks</h6>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Member</th>
+                            <th>Task</th>
+                            <th>Status</th>
+                            <th>Assigned Date</th>
+                            <th>Start Date</th>
+                            <th>Deadline Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tasksTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const workflowData = [
+        {
+            title: 'Provider',
+            color: 'bg-primary',
+            description: 'Labor service provider management workflow',
+            steps: [
+                {
+                    title: 'Registration',
+                    icon: 'fa-user-plus',
+                    description: 'Complete initial registration requirements',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Valid Commercial Registration/Company License (CR)',
+                        'Ministry of Labor approved Labor Supply Permit',
+                        'Professional Indemnity & Liability Insurance Certificates',
+                        'Bank Account Details with IBAN verification',
+                        'Physical Office Location Documentation',
+                        'Company Owner/Manager ID & Documentation',
+                        'Tax Registration Certificates',
+                        'Professional Memberships & Certifications'
+                    ]
+                },
+                {
+                    title: 'Profile Setup',
+                    icon: 'fa-cog',
+                    description: 'Complete your organization profile setup',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Company Legal Name & Trading Name',
+                        'Organization Structure & Management Team',
+                        'Contact Information & Emergency Contacts',
+                        'Branch Locations & Coverage Areas',
+                        'Company Size & Capacity Details',
+                        'Skilled Labor Categories',
+                        'Industry Specializations',
+                        'Service Level Agreements',
+                        'Workforce Capacity per Category',
+                        'Special Certifications & Qualifications'
+                    ]
+                },
+                {
+                    title: 'Labor Management',
+                    icon: 'fa-users',
+                    description: 'Manage and oversee your labor resources',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Labor Database Management',
+                        'Skills Assessment & Categorization',
+                        'Training & Certification Tracking',
+                        'Availability & Schedule Management',
+                        'Performance Monitoring & Evaluation',
+                        'Health & Safety Compliance'
+                    ]
+                },
+                {
+                    title: 'Document Management',
+                    icon: 'fa-file',
+                    description: 'Upload and track relevant documents',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Labor Permits & Visas',
+                        'Work Contracts & Agreements',
+                        'Training Certifications',
+                        'Insurance Documentation',
+                        'Health & Safety Records',
+                        'Performance Evaluations',
+                        'Document Expiry Tracking',
+                        'Automated Renewal Notifications'
+                    ]
+                },
+                {
+                    title: 'Request Handling',
+                    icon: 'fa-clipboard-list',
+                    description: 'Process requests for labor from clients',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Client Request Review & Assessment',
+                        'Resource Availability Check',
+                        'Skill Matching & Selection',
+                        'Quote Generation & Pricing',
+                        'Request Approval Workflow',
+                        'Client Communication Management',
+                        'Request Status Tracking'
+                    ]
+                },
+                {
+                    title: 'Assignment Tracking',
+                    icon: 'fa-tasks',
+                    description: 'Monitor labor assignments and performance',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Real-time Assignment Monitoring',
+                        'Attendance & Time Tracking',
+                        'Performance Metrics & KPIs',
+                        'Issue Resolution Tracking',
+                        'Client Feedback Management',
+                        'Assignment Status Updates',
+                        'Resource Utilization Analytics'
+                    ]
+                },
+                {
+                    title: 'Contract Management',
+                    icon: 'fa-file-contract',
+                    description: 'Manage contracts established with clients',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Contract Creation & Templates',
+                        'Terms & Conditions Management',
+                        'Rate Card Management',
+                        'Contract Renewal Tracking',
+                        'Amendment Processing',
+                        'Service Level Agreement Monitoring',
+                        'Compliance Verification'
+                    ]
+                },
+                {
+                    title: 'Payment Management',
+                    icon: 'fa-money-bill',
+                    description: 'Manage payments related to your labor services',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Invoice Generation & Processing',
+                        'Payment Collection & Tracking',
+                        'Timesheet-based Billing',
+                        'Payment Reconciliation',
+                        'Financial Reporting',
+                        'Tax Management',
+                        'Expense Tracking'
+                    ]
+                },
+                {
+                    title: 'Compliance Reporting',
+                    icon: 'fa-shield',
+                    description: 'Ensure compliance with labor regulations',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Regulatory Compliance Monitoring',
+                        'Audit Trail Maintenance',
+                        'Labor Law Compliance',
+                        'Safety Standards Adherence',
+                        'Insurance Coverage Tracking',
+                        'Incident Reporting & Management',
+                        'Compliance Training Records'
+                    ]
+                }
+            ]
+        },
+        {
+            title: 'Client',
+            color: 'bg-success',
+            description: 'Client labor request and management workflow',
+            steps: [
+                {
+                    title: 'Registration',
+                    icon: 'fa-user-plus',
+                    description: 'Complete your organization registration',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Business Registration/License',
+                        'Company Profile Information',
+                        'Legal Documentation',
+                        'Business Address Verification',
+                        'Contact Information',
+                        'Authorization Documents'
+                    ]
+                },
+                {
+                    title: 'Labor Request Management',
+                    icon: 'fa-clipboard-list',
+                    description: 'Create and manage labor requests',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Select Industry & Skills',
+                        'Specify Labor Requirements',
+                        'Set Duration & Quantity',
+                        'Define Job Specifications',
+                        'Review Available Matches',
+                        'Submit Labor Request'
+                    ]
+                },
+                {
+                    title: 'Contract Management',
+                    icon: 'fa-file-contract',
+                    description: 'Manage your contracts and agreements',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'View Active Contracts',
+                        'Track Contract Status',
+                        'Review Contract Terms',
+                        'Manage Amendments',
+                        'Set Notifications for Renewals'
+                    ]
+                },
+                {
+                    title: 'Active Management',
+                    icon: 'fa-tasks',
+                    description: 'Oversee ongoing labor assignments',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Check Assignment Status',
+                        'Update Assignment Details',
+                        'Communicate with Providers',
+                        'Review Performance Feedback'
+                    ]
+                },
+                {
+                    title: 'Payment Management',
+                    icon: 'fa-money-bill',
+                    description: 'Handle payment processes for labor services',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'View Payment History',
+                        'Manage Payment Methods',
+                        'Track Pending Payments',
+                        'Set Up Payment Notifications'
+                    ]
+                }
+            ]
+        },
+        {
+            title: 'Labor',
+            color: 'bg-warning',
+            description: 'Individual labor registration and management workflow',
+            steps: [
+                {
+                    title: 'Labor Registration',
+                    icon: 'fa-user-plus',
+                    description: 'Complete your personal registration',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Basic Personal Details',
+                        'Contact Information',
+                        'Emergency Contacts',
+                        'Identification Documents',
+                        'Work Eligibility Status',
+                        'Visa Documentation'
+                    ]
+                },
+                {
+                    title: 'Skills & Profile',
+                    icon: 'fa-briefcase',
+                    description: 'Set up your professional profile',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Skills Assessment',
+                        'Work Experience',
+                        'Professional Certifications',
+                        'Training Records',
+                        'Language Proficiency',
+                        'Specializations'
+                    ]
+                },
+                {
+                    title: 'Documents Submission',
+                    icon: 'fa-file',
+                    description: 'Upload required documents',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Identification Proof',
+                        'Education Certificates',
+                        'Previous Employment References',
+                        'Skills Certifications',
+                        'Health Clearance Certificate'
+                    ]
+                },
+                {
+                    title: 'Assignments Management',
+                    icon: 'fa-tasks',
+                    description: 'View and manage labor assignments',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'View Current Assignments',
+                        'Update Availability',
+                        'Submit Performance Feedback',
+                        'Request Changes to Assignments'
+                    ]
+                },
+                {
+                    title: 'Payment Management',
+                    icon: 'fa-money-bill',
+                    description: 'Track and manage your payments',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'View Payment History',
+                        'Manage Payment Methods',
+                        'Track Pending Payments',
+                        'Request Payment Adjustments'
+                    ]
+                },
+                {
+                    title: 'Performance Tracking',
+                    icon: 'fa-chart-line',
+                    description: 'Monitor and report your performance',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'View Performance Ratings',
+                        'Submit Performance Reviews',
+                        'Access Training Resources'
+                    ]
+                }
+            ]
+        },
+        {
+            title: 'Admin',
+            color: 'bg-danger',
+            description: 'System administration and oversight workflow',
+            steps: [
+                {
+                    title: 'Application Review',
+                    icon: 'fa-clipboard-check',
+                    description: 'Process and validate new applications',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Review provider applications',
+                        'Validate business credentials',
+                        'Check compliance requirements',
+                        'Verify insurance and certifications',
+                        'Process background checks',
+                        'Evaluate business history'
+                    ]
+                },
+                {
+                    title: 'Document Verification',
+                    icon: 'fa-file-alt',
+                    description: 'Validate and manage system documentation',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Verify legal documents',
+                        'Review compliance certificates',
+                        'Validate insurance documentation',
+                        'Process license verifications',
+                        'Track document expiration',
+                        'Manage renewal notifications'
+                    ]
+                },
+                {
+                    title: 'Request Oversight',
+                    icon: 'fa-eye',
+                    description: 'Monitor and manage system requests',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Monitor labor requests',
+                        'Review provider matches',
+                        'Validate contract terms',
+                        'Approve labor deployments',
+                        'Track request status',
+                        'Handle dispute resolution'
+                    ]
+                },
+                {
+                    title: 'System Management',
+                    icon: 'fa-cogs',
+                    description: 'Oversee system operations and compliance',
+                    completed: false,
+                    status: 'pending',
+                    requirements: [
+                        'Monitor system compliance',
+                        'Handle system disputes',
+                        'Enforce system rules',
+                        'Manage system updates',
+                        'Generate system reports',
+                        'Maintain system security'
+                    ]
+                }
+            ]
+        }
+    ];
+
+    const teamData = {
+        teams: [],
+        tasks: []
+    };
+
+    function createTeam(name, members) {
+        const team = {
+            id: Date.now(),
+            name,
+            members: members.map(member => ({
+                id: Date.now() + Math.random(),
+                name: member,
+                tasks: []
+            }))
+        };
+        teamData.teams.push(team);
+        saveTeamData();
+        return team;
+    }
+
+    function assignTask(teamId, memberId, taskDetails) {
+        const currentDate = new Date();
+        const task = {
+            id: Date.now(),
+            teamId,
+            memberId: parseInt(memberId),
+            title: taskDetails.title,
+            description: taskDetails.description,
+            status: 'pending',
+            startDate: taskDetails.startDate || currentDate.toISOString(),
+            assignedDate: currentDate.toISOString(),
+            deadlineDate: taskDetails.deadlineDate || new Date(currentDate.setDate(currentDate.getDate() + 7)).toISOString(),
+            createdAt: currentDate.toISOString(),
+            completedAt: null,
+            workflowContext: taskDetails.workflowContext
+        };
+        teamData.tasks.push(task);
+        saveTeamData();
+        return task;
+    }
+
+    function completeTask(taskId) {
+        if (confirm('Are you sure you want to mark this task as complete?')) {
+            const task = teamData.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.status = 'completed';
+                task.completedAt = new Date().toISOString();
+                saveTeamData();
+                showNotification('Task marked as complete!', 'success');
+            }
+            return task;
+        }
+    }
+
+    function saveTeamData() {
+        try {
+            localStorage.setItem('teamData', JSON.stringify(teamData));
+        } catch (error) {
+            console.error('Error saving team data:', error);
+        }
+    }
+
+    function loadTeamData() {
+        try {
+            const savedData = localStorage.getItem('teamData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                teamData.teams = parsedData.teams || [];
+                teamData.tasks = parsedData.tasks || [];
+            }
+        } catch (error) {
+            console.error('Error loading team data:', error);
+        }
+    }
+
+    function renderTeamManagement() {
+        const modalHTML = `
+    <div class="modal fade" id="teamManagementModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Team & Task Management</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <h6>Assign Workflow Task</h6>
+                <form id="assignTaskForm">
+                  <div class="mb-3">
+                    <label class="form-label">Select Role</label>
+                    <select class="form-select" id="workflowRole" required>
+                      <option value="">Select Role</option>
+                      <!-- Dynamically populated -->
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Select Workflow Step</label>
+                    <select class="form-select" id="workflowStep" required disabled>
+                      <option value="">Select Step</option>
+                      <!-- Dynamically populated -->
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Select Team Member</label>
+                    <select class="form-select" id="taskMember" required disabled>
+                      <option value="">Select Member</option>
+                      <!-- Dynamically populated -->
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="taskStartDate" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Deadline Date</label>
+                    <input type="date" class="form-control" id="taskDeadlineDate" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Task Details</label>
+                    <textarea class="form-control" id="taskDescription" required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-success" disabled id="assignTaskButton">Assign Task</button>
+                </form>
+              </div>
+            </div>
+            <div class="mt-4">
+              <h6>Current Tasks</h6>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Team</th>
+                    <th>Member</th>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Assigned Date</th>
+                    <th>Start Date</th>
+                    <th>Deadline Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tasksTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    function setupDateInputs() {
+        const startDateInput = document.getElementById('taskStartDate');
+        const deadlineDateInput = document.getElementById('taskDeadlineDate');
+
+        const currentDate = new Date().toISOString().split('T')[0];
+        startDateInput.min = currentDate;
+        deadlineDateInput.min = currentDate;
+
+        startDateInput.value = currentDate;
+
+        startDateInput.addEventListener('change', function() {
+            deadlineDateInput.min = this.value;
+
+            const startDate = new Date(this.value);
+            const deadlineDate = new Date(deadlineDateInput.value);
+
+            if (deadlineDate <= startDate) {
+                const defaultDeadline = new Date(startDate);
+                defaultDeadline.setDate(startDate.getDate() + 7);
+                deadlineDateInput.value = defaultDeadline.toISOString().split('T')[0];
+            }
+        });
+
+        deadlineDateInput.addEventListener('change', function() {
+            const startDate = new Date(startDateInput.value);
+            const deadlineDate = new Date(this.value);
+
+            if (deadlineDate <= startDate) {
+                alert('Deadline must be after the start date');
+                this.value = startDateInput.value;
+
+                const defaultDeadline = new Date(startDate);
+                defaultDeadline.setDate(startDate.getDate() + 7);
+                this.value = defaultDeadline.toISOString().split('T')[0];
+            }
+        });
+    }
+
+    function setupWorkflowTaskAssignment() {
+        const roleSelect = document.getElementById('workflowRole');
+        const stepSelect = document.getElementById('workflowStep');
+        const memberSelect = document.getElementById('taskMember');
+        const assignTaskButton = document.getElementById('assignTaskButton');
+        const taskDescriptionTextarea = document.getElementById('taskDescription');
+
+        roleSelect.innerHTML = workflowData.map((role, index) =>
+            `<option value="${index}">${role.title}</option>`
+        ).join('');
+
+        roleSelect.addEventListener('change', (e) => {
+            const selectedRoleIndex = e.target.value;
+            const selectedRole = workflowData[selectedRoleIndex];
+
+            stepSelect.innerHTML = selectedRole.steps.map((step, index) =>
+                `<option value="${index}">${step.title}</option>`
+            ).join('');
+            stepSelect.disabled = false;
+        });
+
+        stepSelect.addEventListener('change', (e) => {
+            const selectedRoleIndex = roleSelect.value;
+            const selectedStepIndex = e.target.value;
+            const selectedTeam = teamData.teams[0];
+
+            memberSelect.innerHTML = selectedTeam.members.map(member =>
+                `<option value="${member.id}">${member.name}</option>`
+            ).join('');
+            memberSelect.disabled = false;
+            assignTaskButton.disabled = false;
+        });
+
+        document.getElementById('assignTaskForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            try {
+                const selectedRoleIndex = roleSelect.value;
+                const selectedStepIndex = stepSelect.value;
+                const selectedMemberId = memberSelect.value;
+
+                if (!selectedMemberId) {
+                    throw new Error('Please select a team member');
+                }
+
+                const selectedTeam = teamData.teams[0];
+
+                const taskDetails = {
+                    title: `${workflowData[selectedRoleIndex].title} - ${workflowData[selectedRoleIndex].steps[selectedStepIndex].title}`,
+                    description: taskDescriptionTextarea.value,
+                    startDate: document.getElementById('taskStartDate').value,
+                    deadlineDate: document.getElementById('taskDeadlineDate').value,
+                    workflowContext: {
+                        roleIndex: selectedRoleIndex,
+                        stepIndex: selectedStepIndex
+                    }
+                };
+
+                const newTask = assignTask(selectedTeam.id, parseInt(selectedMemberId), taskDetails);
+
+                renderTasksTable();
+                showNotification('Task assigned successfully!', 'success');
+
+                e.target.reset();
+            } catch (error) {
+                showNotification(error.message, 'danger');
+            }
+        });
+
+        setupDateInputs();
+    }
+
+    function renderTasksTable() {
+        const tableBody = document.getElementById('tasksTableBody');
+        tableBody.innerHTML = teamData.tasks.map(task => {
+            const team = teamData.teams.find(t => t.id === task.teamId) || teamData.teams[0];
+            const member = team.members.find(m => m.id === parseInt(task.memberId));
+
+            return `
+      <tr>
+        <td>${team.name}</td>
+        <td>${member ? member.name : 'Unassigned'}</td>
+        <td>${task.title}</td>
+        <td>
+          <span class="badge ${task.status === 'completed' ? 'bg-success' : 'bg-warning'}">
+            ${task.status}
+          </span>
+        </td>
+        <td>${formatDate(task.assignedDate)}</td>
+        <td>${formatDate(task.startDate)}</td>
+        <td>${formatDate(task.deadlineDate)}</td>
+        <td>
+          ${task.status !== 'completed' ? `
+            <button onclick="completeTask(${task.id}); renderTasksTable();"
+                    class="btn btn-sm btn-success">Complete</button>
+          ` : ''}
+        </td>
+      </tr>
+    `;
+        }).join('');
+    }
+
+    function renderWorkflowDiagram() {
+        const workflowDiagramElement = document.getElementById('workflowDiagram');
+        const currentRole = workflowData[selectedRoleIndex];
+
+        workflowDiagramElement.innerHTML = currentRole.steps.map((step, index) => {
+            const assignedTask = teamData.tasks.find(task =>
+                task.workflowContext &&
+                task.workflowContext.roleIndex === selectedRoleIndex &&
+                task.workflowContext.stepIndex === index
+            );
+
+            const isActive = index === currentStep;
+
+            return `
+      <div class="d-flex align-items-center mb-4 workflow-step ${isActive ? 'active' : ''}">
+        <div class="step-icon ${step.completed ? currentRole.color : 'bg-light'} ${step.completed ? 'text-white' : 'text-muted'}">
+          <i class="fas ${step.icon} fa-lg"></i>
+        </div>
+        <div class="ms-3 flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="m-0 ${isActive ? 'text-primary fw-bold' : ''}">${step.title}</h5>
+            <span class="badge ${step.status === 'done' ? 'bg-success' : 'bg-secondary'}">
+              ${step.status.charAt(0).toUpperCase() + step.status.slice(1)}
+            </span>
+          </div>
+          <p class="small mb-0 text-muted ${isActive ? 'text-dark' : ''}">${step.description}</p>
+
+          ${assignedTask ? `
+            <div class="mt-2 small text-muted">
+              <i class="fas fa-user me-1"></i>
+              ${teamData.teams[0].members.find(m => m.id === assignedTask.memberId)?.name || 'Unassigned'}
+              <span class="ms-2"><i class="fas fa-calendar-alt me-1"></i>
+                ${new Date(assignedTask.deadlineDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            })}
+              </span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+        }).join('');
+
+        setTimeout(() => {
+            const activeStep = document.querySelector('#workflowDiagram .workflow-step.active');
+            if (activeStep) {
+                const offset = activeStep.offsetTop - 100;
+                window.scrollTo({
+                    top: offset,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+    }
+
+    // Initialize the application
+    let selectedRoleIndex = 0;
+    let currentStep = 0;
+
+    function init() {
+        try {
+            loadTeamData();
+
+            if (!teamData.teams.some(team => team.name === 'AYGC Developers')) {
+                const aygcDevelopers = createTeam('AYGC Developers', [
+                    'Haroon Badshah',
+                    'Saif Ur Rehaman',
+                    'Najeer',
+                    'Navaneeth',
+                    'Saleem Banosi',
+                    'Umar Farooq'
+                ]);
+            }
+
+            renderRoles();
+            updateProgress();
+            renderCurrentStep();
+            renderWorkflowDiagram();
+
+            const nextButton = document.getElementById('nextButton');
+            if (nextButton) {
+                nextButton.addEventListener('click', handleNextStep);
+            } else {
+                console.error('Next button not found');
+            }
+
+            renderTeamManagement();
+            setupWorkflowTaskAssignment();
+            renderTasksTable();
+
+        } catch (error) {
+            console.error('Initialization error:', error);
+        }
+    }
+
+    function renderRoles() {
+        const container = document.getElementById('roleContainer');
+        container.innerHTML = workflowData.map((role, index) => {
+            const completedSteps = role.steps.filter(s => s.completed).length;
+            const percentage = Math.round((completedSteps / role.steps.length) * 100);
+
+            return `
+      <div class="col-md-3 mb-3">
+        <div class="role-card workflow-step ${index === selectedRoleIndex ? role.color + ' text-white active' : 'bg-white'}"
+             onclick="selectRole(${index})">
+          <h5 class="m-0">${role.title}</h5>
+          <p class="small mb-0">${role.description}</p>
+          <div class="progress mt-2" style="height: 6px;">
+            <div class="progress-bar ${role.color}" style="width: ${percentage}%"></div>
+          </div>
+          <small>${completedSteps} of ${role.steps.length} completed (${percentage}%)</small>
+        </div>
+      </div>
+    `;
+        }).join('');
+    }
+
+    function updateProgress() {
+        const currentRole = workflowData[selectedRoleIndex];
+        const progress = ((currentStep + 1) / currentRole.steps.length) * 100;
+
+        document.getElementById('progressText').textContent =
+            `Step ${currentStep + 1} of ${currentRole.steps.length}`;
+
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${progress}%`;
+    }
+
+    function renderCurrentStep() {
+        const currentRole = workflowData[selectedRoleIndex];
+        const step = currentRole.steps[currentStep];
+
+        const assignedTask = teamData.tasks.find(task =>
+            task.workflowContext &&
+            task.workflowContext.roleIndex === selectedRoleIndex &&
+            task.workflowContext.stepIndex === currentStep
+        );
+
+        document.getElementById('stepCard').innerHTML = `
+    <div class="d-flex active">
+      <div class="step-icon ${currentRole.color}">
+        <i class="fas ${step.icon} fa-lg"></i>
+      </div>
+      <div class="ms-3 flex-grow-1">
+        <h4>${step.title}</h4>
+        <div class="status-indicator">
+          <button class="status-btn status-${step.status}"
+                  onclick="updateStepStatus(${selectedRoleIndex}, ${currentStep}, '${step.status === 'pending' ? 'done' : 'pending'}')">
+            <i class="fas ${step.status === 'done' ? 'fa-check-circle' : 'fa-clock'}"></i>
+            ${step.status === 'done' ? 'Completed' : 'Pending'}
+          </button>
+        </div>
+        <p class="text-muted">${step.description}</p>
+
+        ${assignedTask ? `
+          <div class="mt-3 p-3 bg-light rounded">
+            <h6 class="mb-2">Task Assignment</h6>
+            <div class="d-flex justify-content-between">
+              <div>
+                <strong>Assigned To:</strong>
+                ${teamData.teams[0].members.find(m => m.id === assignedTask.memberId)?.name || 'Unassigned'}
+              </div>
+              <div>
+                <strong>Deadline:</strong>
+                ${new Date(assignedTask.deadlineDate).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        })}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        <ul class="list-unstyled">
+          ${step.requirements.map(req => `
+            <li class="mb-2 ${step.status === 'done' ? 'text-success' : ''}">
+              <i class="fas ${step.status === 'done' ? 'fa-check-circle' : 'fa-circle'}
+                        ${step.status === 'done' ? 'text-success' : 'text-muted'} me-2"></i>
+              ${req}
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+    </div>
+  `;
+    }
+
+    function renderWorkflowDiagram() {
+        const workflowDiagramElement = document.getElementById('workflowDiagram');
+        const currentRole = workflowData[selectedRoleIndex];
+
+        workflowDiagramElement.innerHTML = currentRole.steps.map((step, index) => {
+            const assignedTask = teamData.tasks.find(task =>
+                task.workflowContext &&
+                task.workflowContext.roleIndex === selectedRoleIndex &&
+                task.workflowContext.stepIndex === index
+            );
+
+            const isActive = index === currentStep;
+
+            return `
+      <div class="d-flex align-items-center mb-4 workflow-step ${isActive ? 'active' : ''}">
+        <div class="step-icon ${step.completed ? currentRole.color : 'bg-light'} ${step.completed ? 'text-white' : 'text-muted'}">
+          <i class="fas ${step.icon} fa-lg"></i>
+        </div>
+        <div class="ms-3 flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="m-0 ${isActive ? 'text-primary fw-bold' : ''}">${step.title}</h5>
+            <span class="badge ${step.status === 'done' ? 'bg-success' : 'bg-secondary'}">
+              ${step.status.charAt(0).toUpperCase() + step.status.slice(1)}
+            </span>
+          </div>
+          <p class="small mb-0 text-muted ${isActive ? 'text-dark' : ''}">${step.description}</p>
+
+          ${assignedTask ? `
+            <div class="mt-2 small text-muted">
+              <i class="fas fa-user me-1"></i>
+              ${teamData.teams[0].members.find(m => m.id === assignedTask.memberId)?.name || 'Unassigned'}
+              <span class="ms-2"><i class="fas fa-calendar-alt me-1"></i>
+                ${new Date(assignedTask.deadlineDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            })}
+              </span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+        }).join('');
+
+        setTimeout(() => {
+            const activeStep = document.querySelector('#workflowDiagram .workflow-step.active');
+            if (activeStep) {
+                const offset = activeStep.offsetTop - 100;
+                window.scrollTo({
+                    top: offset,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+    }
+
+    // Handle role selection
+    function selectRole(index) {
+        selectedRoleIndex = index;
+        currentStep = 0;
+        renderRoles();
+        updateProgress();
+        renderCurrentStep();
+        renderWorkflowDiagram();
+    }
+
+    // Handle next step button click
+    function handleNextStep() {
+        const nextButton = document.getElementById('nextButton');
+
+        // Smooth button animation
+        nextButton.style.transform = 'translateY(2px) scale(0.98)';
+        nextButton.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+
+        setTimeout(() => {
+            nextButton.style.transform = '';
+            nextButton.style.boxShadow = '';
+        }, 200);
+
+        const currentRole = workflowData[selectedRoleIndex];
+
+        // Smooth transition for step card
+        const stepCard = document.getElementById('stepCard');
+        stepCard.style.opacity = '0';
+        stepCard.style.transform = 'translateX(-10px)';
+
+        // Update step/role
+        if (currentStep < currentRole.steps.length - 1) {
+            currentStep++;
+        } else if (selectedRoleIndex < workflowData.length - 1) {
+            selectedRoleIndex++;
+            currentStep = 0;
+        }
+
+        // Smooth fade in for step card
+        setTimeout(() => {
+            stepCard.style.opacity = '1';
+            stepCard.style.transform = 'translateX(0)';
+
+            // Update UI components
+            renderRoles();
+            updateProgress();
+            renderCurrentStep();
+            renderWorkflowDiagram();
+
+            // Smooth scroll to active step
+            const activeStep = document.querySelector('#workflowDiagram .workflow-step.active');
+            if (activeStep) {
+                const offset = activeStep.offsetTop - 100;
+                window.scrollTo({
+                    top: offset,
+                    behavior: 'smooth'
+                });
+            }
+        }, 200);
+    }
+
+    // Update step status
+    function updateStepStatus(roleIndex, stepIndex, status) {
+        workflowData[roleIndex].steps[stepIndex].status = status;
+        workflowData[roleIndex].steps[stepIndex].completed = (status === 'done');
+
+        const stepCard = document.getElementById('stepCard');
+        stepCard.style.animation = 'none';
+        stepCard.offsetHeight;
+        stepCard.style.animation = 'bounceIn 0.5s ease-out';
+
+        renderRoles();
+        renderCurrentStep();
+        renderWorkflowDiagram();
+        updateProgress();
+
+        if(status === 'done') {
+            showNotification('Task completed successfully!', 'success');
+        }
+    }
+
+    // Add notification function
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+        notification.style.zIndex = 1000;
+        notification.innerHTML = `
+    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
+    ${message}
+  `;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Initialize the application when the page loads
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body></html>

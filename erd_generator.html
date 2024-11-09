@@ -1,0 +1,668 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schema Visualizer</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+
+        body { padding-top: 65px; }
+        #erd-output {
+            min-height: 800px;
+            max-height: 1200px;
+            overflow: auto;
+            width: 100%;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            position: relative;
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+        .mermaid {
+            font-size: 28px !important;
+            min-width: 1200px;
+            visibility: visible !important;
+            transform-origin: top left;
+            transform: scale(1.0);
+        }
+        .tables-container {
+            position: relative;
+            min-height: 600px;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+
+        .table-card {
+            position: absolute;
+            min-width: 140px;
+            max-width: 160px;
+            font-size: 0.75rem;
+            background: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            user-select: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .table-card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .table-card.dragging {
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .table-header {
+            cursor: grab;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-top-left-radius: 0.375rem;
+            border-top-right-radius: 0.375rem;
+            padding: 0.35rem;
+        }
+
+        .dragging .table-header {
+            cursor: grabbing;
+        }
+
+        .table-column {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.25rem 0.35rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.7rem;
+        }
+
+        .table-column:last-child {
+            border-bottom: none;
+        }
+
+        .primary-key {
+            font-weight: 600;
+        }
+
+        .relationship-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        body.dragging {
+            cursor: grabbing !important;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        /* Custom styling */
+        .navbar {
+            background: #4086D0 !important;
+            padding: 0.8rem 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 500;
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .version-badge {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.9);
+            padding: 0.2rem 0.8rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-left: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-tools {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .tool-icon {
+            color: white;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .tool-icon:hover {
+            opacity: 1;
+        }
+
+        #erd-container .card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+
+        #erd-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1050;
+            background: white;
+            padding: 20px;
+        }
+
+        #erd-container.fullscreen .card {
+            height: 100%;
+        }
+
+        #erd-container.fullscreen .card-body {
+            height: calc(100vh - 100px);
+        }
+
+        .mermaid {
+            min-height: 500px;
+            overflow: auto;
+        }
+
+        #erd-container .card-body {
+            min-height: 800px;
+            overflow: auto;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #dee2e6;
+            padding: 0.625rem 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .btn-primary {
+            background: #4086D0 !important;
+            border: none;
+            padding: 0.625rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #34495e, #2980b9);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-check-input:checked {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        /* Add subtle hover effect to form inputs */
+        .form-control:hover, .form-select:hover {
+            border-color: #3498db;
+        }
+
+        /* Enhance file input styling */
+        .form-control[type="file"] {
+            padding: 0.375rem 0.75rem;
+            background: #f8f9fa;
+        }
+
+        .form-control[type="file"]::-webkit-file-upload-button {
+            background: #4086D0 !important;
+            color: white;
+            border: none;
+            padding: 0.375rem 1rem;
+            margin-right: 1rem;
+            border-radius: 0.25rem;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Add hover effect for back button */
+        .bi-arrow-left-circle-fill:hover {
+            opacity: 0.8;
+            transform: scale(1.1);
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container-fluid py-3">
+    <nav class="navbar fixed-top">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <a href="index.html" class="text-white me-3" title="Back to Home">
+                    <i class="bi bi-arrow-left-circle-fill" style="font-size: 1.4rem;"></i>
+                </a>
+                <div class="brand-section">
+                    <i class="bi bi-diagram-3 me-2"></i>
+                    <span class="navbar-brand mb-0 h1">ERD Professional</span>
+                    <span class="version-badge">Enterprise Edition</span>
+                </div>
+            </div>
+            <div class="navbar-tools">
+                <i class="bi bi-question-circle tool-icon" title="Help"></i>
+                <i class="bi bi-gear tool-icon" title="Settings"></i>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-diagram-2 me-2"></i>
+                            <span class="fw-semibold">Schema Configuration</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form id="schema-upload-form" class="needs-validation" novalidate>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Schema Type</label>
+                                        <select id="schema-type" class="form-select" required>
+                                            <option value="">Choose schema type...</option>
+                                            <option value="mysql">MySQL Schema</option>
+                                            <option value="json">JSON Schema</option>
+                                        </select>
+                                        <div class="invalid-feedback">Please select a schema type</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Upload Schema File</label>
+                                        <input type="file" id="schema-file" class="form-control" accept=".sql,.json" required>
+                                        <div class="invalid-feedback">Please select a schema file</div>
+                                        <div class="form-text">Supported formats: .sql for MySQL, .json for JSON Schema</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="auto-layout" checked>
+                                            <label class="form-check-label" for="auto-layout">
+                                                Enable automatic layout optimization
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-diagram-3 me-2"></i>Generate ERD
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>ERD Output</span>
+                        <div class="zoom-controls">
+                            <button class="btn btn-sm btn-outline-secondary me-2" id="zoom-out">
+                                <i class="bi bi-zoom-out"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary me-2" id="zoom-in">
+                                <i class="bi bi-zoom-in"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" id="zoom-reset">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="loading" class="text-center d-none">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="erd-output" class="border p-3">
+                            <pre id="mermaid-diagram" class="mermaid"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+<script>
+    // Safe Mermaid Initialization
+    try {
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            logLevel: 3,
+            erdSpacing: 100,  // Increased from 75
+            fontSize: 24,     // Increased from 18
+            defaultRenderer: 'dagre'
+        });
+    } catch (error) {
+        console.error("Mermaid initialization error:", error);
+    }
+
+    // Utility Functions
+    const safeJSONParse = (content) => {
+        try {
+            return JSON.parse(content);
+        } catch (error) {
+            console.error("JSON Parsing Error:", error);
+            throw new Error("Invalid JSON format");
+        }
+    };
+
+    const readFileContent = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (e) => reject(new Error("File reading error"));
+            reader.readAsText(file);
+        });
+    };
+
+    // Schema Parsers
+    const parseMySQLSchema = (content) => {
+        const tables = [];
+        const relationships = [];
+
+        const tableRegex = /CREATE\s+TABLE\s+[`"]?(\w+)[`"]?\s*\(([\s\S]*?)\);/gmi;
+        let tableMatch;
+
+        while ((tableMatch = tableRegex.exec(content)) !== null) {
+            const tableName = tableMatch[1];
+            const tableContent = tableMatch[2];
+            const columns = [];
+
+            const columnLines = tableContent.split(',').map(line => line.trim());
+
+            columnLines.forEach(line => {
+                // Column parsing
+                const columnMatch = line.match(/^[`"]?(\w+)[`"]?\s+(\w+(?:\([^)]+\))?)/i);
+                if (columnMatch) {
+                    columns.push({
+                        name: columnMatch[1],
+                        type: columnMatch[2],
+                        isPrimary: line.toLowerCase().includes('primary key')
+                    });
+                }
+
+                // Foreign Key parsing
+                const fkMatch = line.match(/FOREIGN\s+KEY\s+\(?[`"]?(\w+)[`"]?\)?\s+REFERENCES\s+[`"]?(\w+)[`"]?\s*\(?[`"]?(\w+)[`"]?\)?/i);
+                if (fkMatch) {
+                    relationships.push({
+                        fromTable: tableName,
+                        fromColumn: fkMatch[1],
+                        toTable: fkMatch[2],
+                        toColumn: fkMatch[3]
+                    });
+                }
+            });
+
+            tables.push({ name: tableName, columns });
+        }
+
+        return { tables, relationships };
+    };
+
+    const parseJSONSchema = (data) => {
+        const tables = [];
+        const relationships = [];
+
+        Object.entries(data).forEach(([tableName, tableData]) => {
+            const columns = [];
+
+            // Handle different JSON schema structures
+            const tableColumns = tableData.columns || tableData.fields || {};
+
+            Object.entries(tableColumns).forEach(([colName, colData]) => {
+                columns.push({
+                    name: colName,
+                    type: colData.type || 'string',
+                    isPrimary: colData.primary_key === true
+                });
+            });
+
+            tables.push({ name: tableName, columns });
+
+            // Extract relationships
+            const rels = tableData.relationships || [];
+            rels.forEach(rel => {
+                relationships.push({
+                    fromTable: tableName,
+                    fromColumn: rel.foreign_key,
+                    toTable: rel.references_table,
+                    toColumn: rel.references_field || 'id'
+                });
+            });
+        });
+
+        return { tables, relationships };
+    };
+
+    // ERD Generation
+    const generateERD = (schema) => {
+        let erdCode = 'erDiagram\n';
+
+        // Generate table definitions
+        schema.tables.forEach(table => {
+            erdCode += `    ${table.name} {\n`;
+            table.columns.forEach(col => {
+                const type = (col.type || 'string').split('(')[0].toLowerCase();
+                const keyType = col.isPrimary ? 'PK' :
+                    col.name.endsWith('_id') ? 'FK' : '';
+                erdCode += `        ${col.name} ${type} ${keyType}\n`;  // Ensure column names and types are correct
+            });
+            erdCode += '    }\n';
+        });
+
+        // Generate relationships
+        schema.relationships.forEach(rel => {
+            erdCode += `    ${rel.fromTable} ||--o{ ${rel.toTable} : "${rel.fromColumn}"\n`;  // Ensure relationships are correct
+        });
+
+        return erdCode;
+    };
+
+    // Event Listener
+    document.getElementById('schema-upload-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const form = e.target;
+
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+        }
+
+        const schemaType = document.getElementById('schema-type').value;
+        const schemaFile = document.getElementById('schema-file').files[0];
+        const mermaidContainer = document.getElementById('mermaid-diagram');
+
+        if (!schemaFile) {
+            alert('Please select a schema file');
+            return;
+        }
+
+        try {
+            // Show loading
+            document.getElementById('loading').classList.remove('d-none');
+            mermaidContainer.style.visibility = 'hidden'; // Hide container while loading
+
+            const fileContent = await readFileContent(schemaFile);
+            const schema = schemaType === 'mysql'
+                ? parseMySQLSchema(fileContent)
+                : parseJSONSchema(safeJSONParse(fileContent));
+
+            const erdCode = generateERD(schema);
+
+            // Clear previous content
+            mermaidContainer.textContent = '';
+
+            // Set the new ERD code
+            mermaidContainer.textContent = erdCode;
+
+            // Call mermaid.init() only after textContent is set
+            mermaid.init(undefined, mermaidContainer);
+
+            // Show diagram after rendering
+            mermaidContainer.style.visibility = 'visible';
+            document.getElementById('loading').classList.add('d-none');
+
+        } catch (error) {
+            document.getElementById('loading').classList.add('d-none');
+            mermaidContainer.style.visibility = 'visible';
+            alert('Error processing schema: ' + error.message);
+            console.error(error);
+        }
+    });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    const minZoom = 0.5;
+    const maxZoom = 2;
+
+    function updateZoom() {
+        const erdOutput = document.getElementById('erd-output');
+        erdOutput.style.transform = `scale(${currentZoom})`;
+    }
+
+    document.getElementById('zoom-in').addEventListener('click', () => {
+        if (currentZoom < maxZoom) {
+            currentZoom += zoomStep;
+            updateZoom();
+        }
+    });
+
+    document.getElementById('zoom-out').addEventListener('click', () => {
+        if (currentZoom > minZoom) {
+            currentZoom -= zoomStep;
+            updateZoom();
+        }
+    });
+
+    document.getElementById('zoom-reset').addEventListener('click', () => {
+        currentZoom = 1;
+        updateZoom();
+    });
+
+    // Load template utility function
+    function loadTemplate(type) {
+        const templates = {
+            mysql: `CREATE TABLE users (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100)
+);
+
+CREATE TABLE orders (
+    id INT PRIMARY KEY,
+    user_id INT,
+    total DECIMAL(10,2),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);`,
+            json: `{
+    "users": {
+        "columns": {
+            "id": {"type": "integer", "primary_key": true},
+            "name": {"type": "string"},
+            "email": {"type": "string"}
+        }
+    },
+    "orders": {
+        "columns": {
+            "id": {"type": "integer", "primary_key": true},
+            "user_id": {"type": "integer"},
+            "total": {"type": "decimal"}
+        },
+        "relationships": [
+            {
+                "foreign_key": "user_id",
+                "references_table": "users",
+                "references_field": "id"
+            }
+        ]
+    }
+}`
+        };
+
+        const blob = new Blob([templates[type]], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = type === 'mysql' ? 'template.sql' : 'template.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+
+    function clearForm() {
+        document.getElementById('schema-upload-form').reset();
+    }
+</script>
+
+</body>
+</html>
